@@ -92,7 +92,7 @@ p <- qplot(steps_by_date$Total.no.of.steps,
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+![plot of chunk Histogram of the total no. of steps per day](figure/Histogram of the total no. of steps per day-1.png)
 
 Calculate mean & median of the total number of steps taken
 
@@ -133,7 +133,7 @@ p <- ggplot(data = steps_by_interval,
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+![plot of chunk Average no. of steps across 5-minute intervals](figure/Average no. of steps across 5-minute intervals-1.png)
 
 5- minute interval with the maximum average number of steps
 
@@ -192,7 +192,7 @@ p <- qplot(steps_by_date_imputed$Total.no.of.steps,
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+![plot of chunk Histogram of the total number of steps taken per day using imputed data](figure/Histogram of the total number of steps taken per day using imputed data-1.png)
 
 Calculate mean & median of the total number of steps taken using the imputed data
 
@@ -261,7 +261,7 @@ p <- ggplot(data = steps_by_interval_imputed,
 print(p)
 ```
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+![plot of chunk Average no. of steps across 5-minute intervals on weekdays & weekends](figure/Average no. of steps across 5-minute intervals on weekdays & weekends-1.png)
 
 
 

@@ -73,7 +73,7 @@ steps_by_date <- orig_data %>%
                  summarize(Total.no.of.steps = sum(steps, na.rm = TRUE))
 ```
 Histogram of the total number of steps taken per day
-```{r}
+```{r Histogram of the total no. of steps per day}
 p <- qplot(steps_by_date$Total.no.of.steps,
            geom="histogram",
            binwidth = 1000,  
@@ -96,7 +96,7 @@ steps_by_interval <- orig_data %>%
                      summarize(avg_steps = mean(steps, na.rm = TRUE))
 ```
 Time series plot of the average of steps taken during each 5 minute intervals
-```{r}
+```{r Average no. of steps across 5-minute intervals}
 p <- ggplot(data = steps_by_interval, 
             mapping = aes(x = time, 
                           y = avg_steps, 
@@ -140,7 +140,7 @@ steps_by_date_imputed <- imputed_data %>%
                          summarize(Total.no.of.steps = sum(steps.impute))
 ```
 Histogram of the total number of steps taken per day using the imputed data
-```{r}
+```{r Histogram of the total number of steps taken per day using imputed data}
 p <- qplot(steps_by_date_imputed$Total.no.of.steps,
            geom="histogram",
            binwidth = 1000,  
@@ -173,7 +173,7 @@ or a weekday.
 imputed_data$day.of.week <- unlist(map_chr(imputed_data$date, day.of.week))
 ```
 Group by day of week and the 5-minute time interval
-```{r}
+```{r Average no. of steps across 5-minute intervals on weekdays & weekends}
 steps_by_interval_imputed <- imputed_data %>%
                              group_by(day.of.week, time) %>%
                              summarize(avg_steps = mean(steps.impute))
