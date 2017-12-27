@@ -1,7 +1,8 @@
 Reproducible Research - Week 2 Project
 =====================================
 Load the required libraries
-```{r}
+
+```r
 library(dplyr)
 library(ggplot2)
 library(stringr)
@@ -11,7 +12,8 @@ library(purrr)
 Function to impute missing values in 'Steps'.  
 If the passed in steps is NA, get the rounded average steps taken for the interval
 from steps_by_interval. Else, return the passed in value.
-```{r}
+
+```r
 impute.steps <- function(steps, date, time){
   if(is.na(steps)){
       return(round(steps_by_interval[steps_by_interval$time == time, "avg_steps"]))
@@ -21,7 +23,8 @@ impute.steps <- function(steps, date, time){
 }
 ```
 Function to determine if the passed-in date is a weekday or a weekend.
-```{r}
+
+```r
 day.of.week <- function(date){
   if(weekdays(date) %in% c("Saturday", "Sunday")){
     return("Weekend")
@@ -31,7 +34,8 @@ day.of.week <- function(date){
 }
 ```
 Download the data file (in .zip) from the course page if not found in the working directory.
-```{r}
+
+```r
 if(!file.exists("activity.csv")){
   if(!file.exists("repdata%2Fdata%2Factivity.zip")){
     file.url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
@@ -43,13 +47,15 @@ if(!file.exists("activity.csv")){
 }
 ```
 Read the data file
-```{r}
+
+```r
 orig_data <- read.csv("activity.csv", 
                       na.strings = "NA", 
                       colClasses = c("integer", "Date", "character"))
 ```
 Convert the interval field to a character vector to store the interval in HH::MM format.
-```{r}
+
+```r
 orig_data <- orig_data %>%
              mutate(time = as.POSIXct(str_pad(orig_data$interval, 
                                               width = 4, 
@@ -67,13 +73,15 @@ orig_data <- orig_data %>%
                                  sep = ":"))  
 ```
 Group by date & calculate the total number of steps per day.
-```{r}
+
+```r
 steps_by_date <- orig_data %>%
                  group_by(date) %>%
                  summarize(Total.no.of.steps = sum(steps, na.rm = TRUE))
 ```
 Histogram of the total number of steps taken per day
-```{r}
+
+```r
 p <- qplot(steps_by_date$Total.no.of.steps,
            geom="histogram",
            binwidth = 1000,  
@@ -84,19 +92,35 @@ p <- qplot(steps_by_date$Total.no.of.steps,
 print(p)
 ```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
 Calculate mean & median of the total number of steps taken
-```{r}
+
+```r
 print(paste("The mean number of steps is",mean(steps_by_date$Total.no.of.steps)))
+```
+
+```
+## [1] "The mean number of steps is 9354.22950819672"
+```
+
+```r
 print(paste("The median of the number of steps is",median(steps_by_date$Total.no.of.steps)))
 ```
+
+```
+## [1] "The median of the number of steps is 10395"
+```
 Group by 5 minute data interval & calculate the average no. of steps per interval
-```{r}
+
+```r
 steps_by_interval <- orig_data %>%
                      group_by(time) %>%
                      summarize(avg_steps = mean(steps, na.rm = TRUE))
 ```
 Time series plot of the average of steps taken during each 5 minute intervals
-```{r}
+
+```r
 p <- ggplot(data = steps_by_interval, 
             mapping = aes(x = time, 
                           y = avg_steps, 
@@ -109,38 +133,55 @@ p <- ggplot(data = steps_by_interval,
 print(p)
 ```
 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png)
+
 5- minute interval with the maximum average number of steps
-```{r}
+
+```r
 print(paste("The",steps_by_interval[which.max(steps_by_interval$avg_steps),"time"],
       "time interval has the maximum average number of steps"))
 ```
+
+```
+## [1] "The 08:35 time interval has the maximum average number of steps"
+```
 Print the total number of missing values in the data set
-```{r}
+
+```r
 print(paste("The data set has", sum(is.na(orig_data)),"missing values"))
 ```
+
+```
+## [1] "The data set has 2304 missing values"
+```
 Copy original data to a new data frame
-```{r}
+
+```r
 imputed_data <- orig_data 
 ```
 Prepare the list of arguments to be passed to impute.steps using pmap()
-```{r}
+
+```r
 impute_list <- list(steps = orig_data$steps, 
                     date = orig_data$date,
                     time = orig_data$time)
 ```
 Call impute.steps using pmap by passing in values from orig_data as arguments and
 create a new column in the imputed data frame using the returned values.
-```{r}
+
+```r
 imputed_data$steps.impute <- unlist(pmap(impute_list, impute.steps))
 ```
 Group by date & calculate the total number of steps per day.
-```{r}
+
+```r
 steps_by_date_imputed <- imputed_data %>%
                          group_by(date) %>%
                          summarize(Total.no.of.steps = sum(steps.impute))
 ```
 Histogram of the total number of steps taken per day using the imputed data
-```{r}
+
+```r
 p <- qplot(steps_by_date_imputed$Total.no.of.steps,
            geom="histogram",
            binwidth = 1000,  
@@ -151,29 +192,57 @@ p <- qplot(steps_by_date_imputed$Total.no.of.steps,
 print(p)
 ```
 
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18-1.png)
+
 Calculate mean & median of the total number of steps taken using the imputed data
-```{r}
+
+```r
 print(paste("The mean number of steps is", 
             mean(steps_by_date_imputed$Total.no.of.steps),
             "using imputed data"))
+```
+
+```
+## [1] "The mean number of steps is 10765.6393442623 using imputed data"
+```
+
+```r
 print(paste("The median of the number of steps is", 
             median(steps_by_date_imputed$Total.no.of.steps),
             "using imputed data"))
 ```
+
+```
+## [1] "The median of the number of steps is 10762 using imputed data"
+```
 Compare mean & median of the original & imputed data sets.
-```{r}
+
+```r
 print(paste("The difference between the mean number of steps for original & imputed data sets is",
             mean(steps_by_date_imputed$Total.no.of.steps) - mean(steps_by_date$Total.no.of.steps)))
+```
+
+```
+## [1] "The difference between the mean number of steps for original & imputed data sets is 1411.40983606558"
+```
+
+```r
 print(paste("The difference between the median of the number of steps for original & imputed data sets is",
             median(steps_by_date_imputed$Total.no.of.steps) - median(steps_by_date$Total.no.of.steps)))
 ```
+
+```
+## [1] "The difference between the median of the number of steps for original & imputed data sets is 367"
+```
 Add a new column to the imputed data frame to indicate if the day was a Weekend 
 or a weekday.
-```{r}
+
+```r
 imputed_data$day.of.week <- unlist(map_chr(imputed_data$date, day.of.week))
 ```
 Group by day of week and the 5-minute time interval
-```{r}
+
+```r
 steps_by_interval_imputed <- imputed_data %>%
                              group_by(day.of.week, time) %>%
                              summarize(avg_steps = mean(steps.impute))
@@ -191,6 +260,8 @@ p <- ggplot(data = steps_by_interval_imputed,
      facet_grid(day.of.week~.)
 print(p)
 ```
+
+![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
 
 
 
